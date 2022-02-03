@@ -1,0 +1,35 @@
+version: '2'
+
+services:
+  app:
+    image: 'testsample.jar:latest'
+    build:
+      context: .
+    container_name: app
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/NovelVistaTest
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+          
+  db:
+    image: 'postgres:10.19-alpine'
+    container_name: db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=NovelVistaTest 
+    ports: 
+      - 5432:5432
+    expose: 
+      - "5432/tcp"
+    volumes:
+      - ./dbs/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+volumes:
+  dbs:
+    driver: local
